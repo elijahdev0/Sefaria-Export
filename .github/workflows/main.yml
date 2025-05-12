@@ -11,7 +11,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y subversion
 
       - name: Download only /json/ folder using SVN
-        run: svn checkout https://github.com/Sefaria/Export/trunk/json
+        run: svn checkout https://github.com/elijahdev0/Sefaria-Export/trunk/json
 
       - name: Install rclone
         run: curl https://rclone.org/install.sh | sudo bash

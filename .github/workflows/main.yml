@@ -1,18 +1,20 @@
-name: Upload Sefaria Export to R2
+name: Upload Sefaria /json/ to R2
 
 on:
   workflow_dispatch:
 
 jobs:
-  upload-to-r2:
+  upload-json-to-r2:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Export repo
-        uses: actions/checkout@v4
+      - name: Install SVN
+        run: sudo apt-get update && sudo apt-get install -y subversion
+
+      - name: Download only /json/ folder using SVN
+        run: svn checkout https://github.com/Sefaria/Export/trunk/json
 
       - name: Install rclone
-        run: |
-          curl https://rclone.org/install.sh | sudo bash
+        run: curl https://rclone.org/install.sh | sudo bash
 
       - name: Configure rclone for R2
         run: |
@@ -26,25 +28,4 @@ jobs:
           " > rclone.conf
 
       - name: Upload /json/ to R2
-        run: |
-          rclone copy json r2:${{ secrets.R2_BUCKET }}/json --config rclone.conf --progress
-
-      - name: Upload /links/ to R2
-        run: |
-          rclone copy links r2:${{ secrets.R2_BUCKET }}/links --config rclone.conf --progress
-
-      - name: Upload /schemas/ to R2
-        run: |
-          rclone copy schemas r2:${{ secrets.R2_BUCKET }}/schemas --config rclone.conf --progress
-
-      - name: Upload /txt/ to R2
-        run: |
-          rclone copy txt r2:${{ secrets.R2_BUCKET }}/txt --config rclone.conf --progress || echo "No /txt/ folder found"
-
-      - name: Upload /xml/ to R2
-        run: |
-          rclone copy xml r2:${{ secrets.R2_BUCKET }}/xml --config rclone.conf --progress || echo "No /xml/ folder found"
-
-      - name: Upload /misc/ to R2
-        run: |
-          rclone copy misc r2:${{ secrets.R2_BUCKET }}/misc --config rclone.conf --progress || echo "No /misc/ folder found"
+        run: rclone copy json r2:${{ secrets.R2_BUCKET }}/json --config rclone.conf --progress
